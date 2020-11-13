@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">FamilyMapClient</string>
+    <string name="server_host_label">Server Host</string>
+    <string name="port_number_label">Port Number</string>
+    <string name="user_name_label">User Name</string>
+    <string name="password_label">Password</string>
+    <string name="last_name_label">Last Name</string>
+    <string name="first_name_label">First Name</string>
+    <string name="email_label">Email</string>
+    <string name="gender_label">Gender</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="sign_in">Sign In</string>
+    <string name="register">Register</string>
+</resources>
