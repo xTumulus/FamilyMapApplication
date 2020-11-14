@@ -10,6 +10,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.kitchdevelopment.familymapclient.proxy.HttpClient;
+import com.kitchdevelopment.familymapclient.proxy.ServerProxy;
+
+import java.io.IOException;
+import java.net.URL;
+
+import Models.User;
+import Results.LoginOrRegisterResult;
+import Results.PersonResult;
+
 public class LoginFragment extends Fragment {
     
     @Override
@@ -40,5 +50,42 @@ public class LoginFragment extends Fragment {
             }
         });
         return v;
+    }
+
+    public class LoginUserTask extends AsyncTask<URL, Void, PersonResult> {
+        @Override
+        protected LoginOrRegisterResult doInBackground(URL... urls) {
+            HttpClient httpClient = new HttpClient();
+
+            for(int i = 0; i < urls.length; i++)
+                try {
+                    String urlContent = httpClient.getUrlString(urls[i]);
+                    Log.i("LoginFragment", "Fetched contents of url: " + urlContent);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            //Do something with url content
+            return null;
+        }
+    }
+
+    public class GetFamilyDataTask extends AsyncTask<URL, Void, PersonResult> {
+        @Override
+        protected PersonResult doInBackground(URL... urls) {
+            HttpClient httpClient = new HttpClient();
+
+            for(int i = 0; i < urls.length; i++)
+                try {
+                    PersonResult persons = httpClient.getUrlString(urls[i]);
+                    ServerProxy.getPeople();
+//                    Log.i("LoginFragment", "Fetched contents of url: " + urlContent);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            //Do something with url content
+            return null;
+        }
     }
 }
