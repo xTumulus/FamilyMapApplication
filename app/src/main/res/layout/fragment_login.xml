@@ -61,25 +61,26 @@
         android:inputType="textEmailAddress"
         android:hint="@string/email_label"/>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/gender_label"/>
+
     <RadioGroup
+        android:id="@+id/genderRadioGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         >
 
-        <TextView
+        <RadioButton
+            android:id="@+id/genderMale"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/gender_label"/>
+            android:text="@string/male"/>
 
         <RadioButton
-            android:id="@+id/radioButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/male" />
-
-        <RadioButton
-            android:id="@+id/radioButton2"
+            android:id="@+id/genderFemale"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/female" />
