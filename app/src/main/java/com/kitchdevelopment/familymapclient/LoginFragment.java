@@ -50,6 +50,16 @@ public class LoginFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_login, container, false);
 
+        //Form fields
+        final EditText userNameField = v.findViewById(R.id.userName);
+        final EditText passwordField = v.findViewById(R.id.password);
+        final EditText hostField = v.findViewById(R.id.serverHost);
+        final EditText portText = v.findViewById(R.id.serverPort);
+        final EditText emailField = v.findViewById(R.id.email);
+        final EditText firstNameField = v.findViewById(R.id.firstName);
+        final EditText lastNameField = v.findViewById(R.id.lastName);
+        final RadioGroup radioGroup = v.findViewById(R.id.genderRadioGroup);
+
         final Button loginButton = v.findViewById(R.id.login_button);
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,13 +67,9 @@ public class LoginFragment extends Fragment {
                 System.out.println("clicked login");
 
                 //get form values
-                EditText userNameField = v.findViewById(R.id.userName);
                 userName = userNameField.getText().toString();
-                EditText passwordField = v.findViewById(R.id.password);
                 password = passwordField.getText().toString();
-                EditText hostField = v.findViewById(R.id.serverHost);
                 serverHost = hostField.getText().toString();
-                EditText portText = v.findViewById(R.id.serverPort);
                 serverPort = portText.getText().toString();
 
                 try {
@@ -84,23 +90,15 @@ public class LoginFragment extends Fragment {
                 System.out.println("clicked register");
 
                 //get form values
-                EditText userNameField = v.findViewById(R.id.userName);
                 userName = userNameField.getText().toString();
-                EditText passwordField = v.findViewById(R.id.password);
                 password = passwordField.getText().toString();
-                EditText emailField = v.findViewById(R.id.email);
                 email = emailField.getText().toString();
-                EditText firstNameField = v.findViewById(R.id.firstName);
                 firstName = firstNameField.getText().toString();
-                EditText lastNameField = v.findViewById(R.id.lastName);
                 lastName = lastNameField.getText().toString();
-                EditText hostField = v.findViewById(R.id.serverHost);
                 serverHost = hostField.getText().toString();
-                EditText portText = v.findViewById(R.id.serverPort);
                 serverPort = portText.getText().toString();
 
                 //determine gender from radio buttons
-                RadioGroup radioGroup = v.findViewById(R.id.genderRadioGroup);
                 int genderRadioId = radioGroup.getCheckedRadioButtonId();
                 RadioButton selectedGender = v.findViewById(genderRadioId);
                 if (selectedGender.getText() == "Male") {
