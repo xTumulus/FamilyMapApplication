@@ -14,6 +14,6 @@
     <string name="register">Register</string>
     <string name="login_failed_message">Login attempt failed! The username or password was not recognized.</string>
     <string name="login_success_message">Login successful!</string>
-    <string name="register_failed_message">Registration attempt failed! Information was incomplete or contained errors.</string>
+    <string name="register_failed_message">Registration attempt failed! Information was incomplete or user is already registered.</string>
     <string name="register_success_message">Registered new user!</string>
 </resources>

@@ -33,6 +33,8 @@ public class ServerProxy {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod(REQUEST_METHOD_POST);
             connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestProperty("Accept", "application/json");
             connection.connect();
 
             try {
@@ -74,7 +76,6 @@ public class ServerProxy {
                 connection.setRequestProperty("Authorization", authToken);
             }
             connection.setDoOutput(false);
-//            connection.addRequestProperty("Accept", "application/json");
             connection.connect();
 
             //Get and read responseBody input
@@ -105,7 +106,9 @@ public class ServerProxy {
         String requestBodyJson = GsonSerializer.serialize(request);
 
         //Get and return response
-        return GsonSerializer.deserialize(getUrlStringPOST(url, requestBodyJson), LoginOrRegisterResult.class);
+        String responseString = getUrlStringPOST(url, requestBodyJson);
+        LoginOrRegisterResult result = GsonSerializer.deserialize(responseString, LoginOrRegisterResult.class);
+        return result;
     }
 
     public LoginOrRegisterResult register(RegisterRequest request, URL url) throws IOException {
@@ -123,7 +126,7 @@ public class ServerProxy {
 
         //Does not have a request body
 
-        //Get response
+        //Get response and cache data
         String responseString = getUrlStringGET(url, authToken);
         BatchResult result = GsonSerializer.deserialize(responseString, BatchResult.class);
         DataCache.getInstance().cachePersonData(result);
@@ -135,7 +138,7 @@ public class ServerProxy {
 
         //Does not have a request body
 
-        //Get response
+        //Get response and cache data
         String responseString = getUrlStringGET(url, authToken);
         BatchResult result = GsonSerializer.deserialize(responseString, BatchResult.class);
         DataCache.getInstance().cacheEventData(result);

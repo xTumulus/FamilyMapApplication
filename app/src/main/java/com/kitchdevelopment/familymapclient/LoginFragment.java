@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.kitchdevelopment.familymapclient.cache.DataCache;
 import com.kitchdevelopment.familymapclient.proxy.ServerProxy;
 
 import java.io.IOException;
@@ -40,7 +41,7 @@ public class LoginFragment extends Fragment {
     String lastName;
     String serverHost;
     String serverPort;
-    Character gender;
+    char gender;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -126,30 +127,34 @@ public class LoginFragment extends Fragment {
         return v;
     }
 
+    private void sendAsyncToast(final String message) {
+        getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     public class LoginUserTask extends AsyncTask<URL, Void, LoginOrRegisterResult> {
         @Override
         protected LoginOrRegisterResult doInBackground(URL... urls) {
             ServerProxy serverProxy = new ServerProxy();
 
-            for(int i = 0; i < urls.length; i++) {
-                LoginRequest loginRequest = new LoginRequest(userName, password);
-                LoginOrRegisterResult result = null;
-                try {
-                    result = serverProxy.login(loginRequest, urls[i]);
-                    if(result.isSuccess()) {
-                        result = result;
-                        serverProxy.getPeople(result.getAuthToken(), serverHost, serverPort);
-                        serverProxy.getEvents(result.getAuthToken(), serverHost, serverPort);
-                        sendAsyncToast(getResources().getString(R.string.login_success_message));
-                        return result;
-                    }
-                    else {
-                        sendAsyncToast(getResources().getString(R.string.login_failed_message));
-                        return null;
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+            LoginRequest loginRequest = new LoginRequest(userName, password);
+            try {
+                LoginOrRegisterResult result = serverProxy.login(loginRequest, urls[0]);
+                if(result.isSuccess()) {
+                    new GetFamilyDataTask().execute(result);
+                    sendAsyncToast(getResources().getString(R.string.login_success_message) + "\n"
+                            + DataCache.getInstance().getUser().getFirstName() + " " + DataCache.getInstance().getUser().getLastName());
+                    return result;
                 }
+                else {
+                    sendAsyncToast(getResources().getString(R.string.login_failed_message));
+                    return result;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
             return null;
         }
@@ -160,55 +165,38 @@ public class LoginFragment extends Fragment {
         protected LoginOrRegisterResult doInBackground(URL... urls) {
             ServerProxy serverProxy = new ServerProxy();
 
-            for(int i = 0; i < urls.length; i++) {
-                RegisterRequest registerRequest = new RegisterRequest(userName, password, email, firstName, lastName, gender);
-                LoginOrRegisterResult result = null;
-                try {
-                    result = serverProxy.register(registerRequest, urls[i]);
-                    if(result.isSuccess()) {
-                        serverProxy.getPeople(result.getAuthToken(), serverHost, serverPort);
-                        serverProxy.getEvents(result.getAuthToken(), serverHost, serverPort);
-//                        sendAsyncToast(getResources().getString(R.string.register_success_message));
-                        getActivity().runOnUiThread(new Runnable() {
-                            public void run() {
-                                Toast.makeText(getActivity(), R.string.register_success_message, Toast.LENGTH_LONG).show();
-                            }
-                        });
-                    }
-                    else {
-                        sendAsyncToast(getResources().getString(R.string.register_failed_message));
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+            RegisterRequest registerRequest = new RegisterRequest(userName, password, email, firstName, lastName, gender);
+            try {
+                LoginOrRegisterResult result = serverProxy.register(registerRequest, urls[0]);
+                if(result.isSuccess()) {
+                    new GetFamilyDataTask().execute(result);
+                    sendAsyncToast(getResources().getString(R.string.register_success_message));
+                    return result;
                 }
-                return result;
+                else {
+                    sendAsyncToast(getResources().getString(R.string.register_failed_message));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
             return null;
         }
     }
 
-    private void sendAsyncToast(final String message) {
-        getActivity().runOnUiThread(new Runnable() {
-            public void run() {
-                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+    public class GetFamilyDataTask extends AsyncTask<LoginOrRegisterResult, Void, PersonResult> {
+        ServerProxy serverProxy = new ServerProxy();
 
-//    public class GetFamilyDataTask extends AsyncTask<URL, Void, PersonResult> {
-//        @Override
-//        protected PersonResult doInBackground(URL... urls) {
-//            ServerProxy serverProxy = new ServerProxy();
-//
-//            for(int i = 0; i < urls.length; i++)
-//                try {
-//                    PersonResult result = serverProxy.getPeople();
-////                    Log.i("LoginFragment", "Fetched contents of url: " + urlContent);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//
-//            return null;
-//        }
-//    }
+        @Override
+        protected PersonResult doInBackground(LoginOrRegisterResult...results) {
+            try {
+                serverProxy.getPeople(results[0].getAuthToken(), serverHost, serverPort);
+                serverProxy.getEvents(results[0].getAuthToken(), serverHost, serverPort);
+                sendAsyncToast("\n" + DataCache.getInstance().getUser().getFirstName() + " " + DataCache.getInstance().getUser().getLastName());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+    }
 }
