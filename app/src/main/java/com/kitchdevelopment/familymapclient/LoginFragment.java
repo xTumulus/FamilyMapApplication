@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,6 +24,7 @@ import java.net.URL;
 import Models.User;
 import Requests.LoginRequest;
 import Requests.RegisterRequest;
+import Results.BaseResult;
 import Results.LoginOrRegisterResult;
 import Results.PersonResult;
 
@@ -58,7 +60,19 @@ public class LoginFragment extends Fragment {
         final EditText emailField = v.findViewById(R.id.email);
         final EditText firstNameField = v.findViewById(R.id.firstName);
         final EditText lastNameField = v.findViewById(R.id.lastName);
-        final RadioGroup radioGroup = v.findViewById(R.id.genderRadioGroup);
+
+        final RadioGroup genderRadioGroup = v.findViewById(R.id.genderRadioGroup);
+        genderRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId == R.id.genderMale) {
+                    gender = 'm';
+                }
+                else {
+                    gender = 'f';
+                }
+            }
+        });
 
         final Button loginButton = v.findViewById(R.id.login_button);
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -97,16 +111,7 @@ public class LoginFragment extends Fragment {
                 lastName = lastNameField.getText().toString();
                 serverHost = hostField.getText().toString();
                 serverPort = portText.getText().toString();
-
-                //determine gender from radio buttons
-                int genderRadioId = radioGroup.getCheckedRadioButtonId();
-                RadioButton selectedGender = v.findViewById(genderRadioId);
-                if (selectedGender.getText() == "Male") {
-                    gender = 'm';
-                }
-                else {
-                    gender = 'f';
-                }
+                //gender determined in radiogroup listener
 
                 try {
                     StringBuilder requestString = new StringBuilder();
@@ -131,13 +136,21 @@ public class LoginFragment extends Fragment {
                 LoginOrRegisterResult result = null;
                 try {
                     result = serverProxy.login(loginRequest, urls[i]);
-//                    serverProxy.getPeople(result.getAuthToken())
+                    if(result.isSuccess()) {
+                        result = result;
+                        serverProxy.getPeople(result.getAuthToken(), serverHost, serverPort);
+                        serverProxy.getEvents(result.getAuthToken(), serverHost, serverPort);
+                        sendAsyncToast(getResources().getString(R.string.login_success_message));
+                        return result;
+                    }
+                    else {
+                        sendAsyncToast(getResources().getString(R.string.login_failed_message));
+                        return null;
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                return result;
             }
-
             return null;
         }
     }
@@ -152,6 +165,19 @@ public class LoginFragment extends Fragment {
                 LoginOrRegisterResult result = null;
                 try {
                     result = serverProxy.register(registerRequest, urls[i]);
+                    if(result.isSuccess()) {
+                        serverProxy.getPeople(result.getAuthToken(), serverHost, serverPort);
+                        serverProxy.getEvents(result.getAuthToken(), serverHost, serverPort);
+//                        sendAsyncToast(getResources().getString(R.string.register_success_message));
+                        getActivity().runOnUiThread(new Runnable() {
+                            public void run() {
+                                Toast.makeText(getActivity(), R.string.register_success_message, Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                    else {
+                        sendAsyncToast(getResources().getString(R.string.register_failed_message));
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -159,6 +185,14 @@ public class LoginFragment extends Fragment {
             }
             return null;
         }
+    }
+
+    private void sendAsyncToast(final String message) {
+        getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 //    public class GetFamilyDataTask extends AsyncTask<URL, Void, PersonResult> {

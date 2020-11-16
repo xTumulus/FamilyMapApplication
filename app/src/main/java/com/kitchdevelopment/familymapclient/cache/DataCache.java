@@ -6,6 +6,7 @@ import java.util.Set;
 import Models.AuthToken;
 import Models.Person;
 import Models.User;
+import Results.BatchResult;
 import Results.EventResult;
 import Results.PersonResult;
 
@@ -38,7 +39,11 @@ public class DataCache {
         return instance;
     }
 
-    public void cacheData(PersonResult people, EventResult events) {
-        //Get the data from the server proxy and fill the variables above
+    public void cachePersonData(BatchResult people) {
+        System.out.println(people.toString());
+    }
+
+    public void cacheEventData(BatchResult events) {
+        System.out.println(events.toString());
     }
 }

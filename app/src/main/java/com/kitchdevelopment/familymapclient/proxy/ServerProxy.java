@@ -1,5 +1,6 @@
 package com.kitchdevelopment.familymapclient.proxy;
 
+import com.kitchdevelopment.familymapclient.cache.DataCache;
 import com.kitchdevelopment.familymapclient.utils.GsonSerializer;
 
 import java.io.ByteArrayOutputStream;
@@ -13,6 +14,7 @@ import java.net.URL;
 import Models.AuthToken;
 import Requests.LoginRequest;
 import Requests.RegisterRequest;
+import Results.BaseResult;
 import Results.BatchResult;
 import Results.EventResult;
 import Results.LoginOrRegisterResult;
@@ -23,38 +25,39 @@ public class ServerProxy {
     final String REQUEST_METHOD_GET = "GET";
     final String API_PATH_LOGIN = "/user/login";
     final String API_PATH_REGISTER = "/user/register";
-    final String API_PATH_PERSONS = "/user/person";
-    final String API_PATH_EVENTS = "/user/event";
+    final String API_PATH_PERSONS = "/person";
+    final String API_PATH_EVENTS = "/event";
 
-    private String getUrlString(URL url, String requestMethod, String requestBodyJson) {
+    private String getUrlStringPOST(URL url, String requestBodyJson) {
         try {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod(requestMethod);
+            connection.setRequestMethod(REQUEST_METHOD_POST);
             connection.setDoOutput(true);
             connection.connect();
 
             try {
-                //Get request stream
+                //Get and write to request stream
                 OutputStream requestBody = connection.getOutputStream();
-                //Write request to server
                 requestBody.write(requestBodyJson.getBytes());
             }
             catch (Exception e) {
                 e.printStackTrace();
             }
 
-            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                //Get responseBody input
-                InputStream responseBody = connection.getInputStream();
+            //Get and read responseBody
+            InputStream responseBody = connection.getInputStream();
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int numBytes;
+            while ((numBytes = responseBody.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, numBytes);
+            }
 
-                //Read responseBody
-                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                byte[] buffer = new byte[1024];
-                int numBytes;
-                while ((numBytes = responseBody.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, numBytes);
-                }
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK || connection.getResponseCode() == HttpURLConnection.HTTP_BAD_REQUEST) {
                 return outputStream.toString();
+            }
+            else {
+                //Throw error?
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -63,28 +66,31 @@ public class ServerProxy {
         return null;
     }
 
-    private String getUrlString(URL url, String requestMethod, AuthToken authToken) {
+    private String getUrlStringGET(URL url, String authToken) {
         try {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod(requestMethod);
+            connection.setRequestMethod(REQUEST_METHOD_GET);
             if(authToken != null) {
-                connection.setRequestProperty("Authorization", authToken.getAuthToken());
+                connection.setRequestProperty("Authorization", authToken);
             }
-            connection.setDoOutput(true);
+            connection.setDoOutput(false);
+//            connection.addRequestProperty("Accept", "application/json");
             connection.connect();
 
-            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                //Get responseBody input
-                InputStream responseBody = connection.getInputStream();
+            //Get and read responseBody input
+            InputStream responseBody = connection.getInputStream();
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int numBytes;
+            while ((numBytes = responseBody.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, numBytes);
+            }
 
-                //Read responseBody
-                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                byte[] buffer = new byte[1024];
-                int numBytes;
-                while ((numBytes = responseBody.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, numBytes);
-                }
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 return outputStream.toString();
+            }
+            else {
+                //Throw error?
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -96,45 +102,43 @@ public class ServerProxy {
 
     public LoginOrRegisterResult login(LoginRequest request, URL url) throws IOException {
         //Serialize the request info
-        String requestBodyJson = GsonSerializer.getInstance().serialize(request);
+        String requestBodyJson = GsonSerializer.serialize(request);
 
         //Get and return response
-        return GsonSerializer.deserialize(getUrlString(url, REQUEST_METHOD_POST, requestBodyJson), LoginOrRegisterResult.class);
+        return GsonSerializer.deserialize(getUrlStringPOST(url, requestBodyJson), LoginOrRegisterResult.class);
     }
 
     public LoginOrRegisterResult register(RegisterRequest request, URL url) throws IOException {
         //Serialize the request info
-        String requestBodyJson = GsonSerializer.getInstance().serialize(request);
+        String requestBodyJson = GsonSerializer.serialize(request);
 
         //Get and return response
-        return GsonSerializer.deserialize(getUrlString(url, REQUEST_METHOD_POST, requestBodyJson), LoginOrRegisterResult.class);
-    }
-
-    public BatchResult getPeople(AuthToken token, String serverHost, String port) throws IOException {
-        //Make url string
-        StringBuilder requestString = new StringBuilder();
-        requestString.append("http://" + serverHost + ":" + port + API_PATH_PERSONS);
-        URL url = new URL(requestString.toString());
-
-        //Does not have a request body
-
-        //Get and return response
-        BatchResult result = GsonSerializer.deserialize(getUrlString(url, REQUEST_METHOD_POST, token), BatchResult.class);
-        //GivetoDataCache()
+        String responseString = getUrlStringPOST(url, requestBodyJson);
+        LoginOrRegisterResult result =  GsonSerializer.deserialize(responseString, LoginOrRegisterResult.class);
         return result;
     }
 
-    public BatchResult getEvents(AuthToken token, String serverHost, String port) throws IOException {
-        //Make url string
-        StringBuilder requestString = new StringBuilder();
-        requestString.append("http://" + serverHost + ":" + port + API_PATH_EVENTS);
-        URL url = new URL(requestString.toString());
+    public BatchResult getPeople(String authToken, String serverHost, String port) throws IOException {
+        URL url = new URL("http://" + serverHost + ":" + port + API_PATH_PERSONS);
 
         //Does not have a request body
 
-        //Get and return response
-        BatchResult result = GsonSerializer.deserialize(getUrlString(url, REQUEST_METHOD_POST, token), BatchResult.class);
-        //GivetoDataCache()
+        //Get response
+        String responseString = getUrlStringGET(url, authToken);
+        BatchResult result = GsonSerializer.deserialize(responseString, BatchResult.class);
+        DataCache.getInstance().cachePersonData(result);
+        return result;
+    }
+
+    public BatchResult getEvents(String authToken, String serverHost, String port) throws IOException {
+        URL url = new URL("http://" + serverHost + ":" + port + API_PATH_EVENTS);
+
+        //Does not have a request body
+
+        //Get response
+        String responseString = getUrlStringGET(url, authToken);
+        BatchResult result = GsonSerializer.deserialize(responseString, BatchResult.class);
+        DataCache.getInstance().cacheEventData(result);
         return result;
     }
 }
