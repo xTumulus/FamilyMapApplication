@@ -26,6 +26,7 @@ import Models.User;
 import Requests.LoginRequest;
 import Requests.RegisterRequest;
 import Results.BaseResult;
+import Results.BatchEventResult;
 import Results.LoginOrRegisterResult;
 import Results.PersonResult;
 
@@ -145,18 +146,23 @@ public class LoginFragment extends Fragment {
                 LoginOrRegisterResult result = serverProxy.login(loginRequest, urls[0]);
                 if(result.isSuccess()) {
                     new GetFamilyDataTask().execute(result);
-                    sendAsyncToast(getResources().getString(R.string.login_success_message) + "\n"
-                            + DataCache.getInstance().getUser().getFirstName() + " " + DataCache.getInstance().getUser().getLastName());
-                    return result;
                 }
-                else {
-                    sendAsyncToast(getResources().getString(R.string.login_failed_message));
-                    return result;
-                }
+                onPostExecute(result);
+                return result;
             } catch (IOException e) {
                 e.printStackTrace();
             }
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(LoginOrRegisterResult loginOrRegisterResult) {
+            if(loginOrRegisterResult.isSuccess()) {
+                sendAsyncToast(getResources().getString(R.string.login_success_message));
+            }
+            else {
+                sendAsyncToast(getResources().getString(R.string.login_failed_message));
+            }
         }
     }
 
@@ -170,33 +176,46 @@ public class LoginFragment extends Fragment {
                 LoginOrRegisterResult result = serverProxy.register(registerRequest, urls[0]);
                 if(result.isSuccess()) {
                     new GetFamilyDataTask().execute(result);
-                    sendAsyncToast(getResources().getString(R.string.register_success_message));
-                    return result;
                 }
-                else {
-                    sendAsyncToast(getResources().getString(R.string.register_failed_message));
-                }
+                onPostExecute(result);
+                return result;
             } catch (IOException e) {
                 e.printStackTrace();
             }
             return null;
         }
+
+        @Override
+        protected void onPostExecute(LoginOrRegisterResult loginOrRegisterResult) {
+            if(loginOrRegisterResult.isSuccess()) {
+                sendAsyncToast(getResources().getString(R.string.register_success_message));
+            }
+            else {
+                sendAsyncToast(getResources().getString(R.string.register_failed_message));
+            }
+        }
     }
 
-    public class GetFamilyDataTask extends AsyncTask<LoginOrRegisterResult, Void, PersonResult> {
+    public class GetFamilyDataTask extends AsyncTask<LoginOrRegisterResult, Void, BatchEventResult> {
         ServerProxy serverProxy = new ServerProxy();
 
         @Override
-        protected PersonResult doInBackground(LoginOrRegisterResult...results) {
+        protected BatchEventResult doInBackground(LoginOrRegisterResult...results) {
             try {
                 serverProxy.getPeople(results[0].getAuthToken(), serverHost, serverPort);
-                serverProxy.getEvents(results[0].getAuthToken(), serverHost, serverPort);
-                sendAsyncToast("\n" + DataCache.getInstance().getUser().getFirstName() + " " + DataCache.getInstance().getUser().getLastName());
+                BatchEventResult result = serverProxy.getEvents(results[0].getAuthToken(), serverHost, serverPort);
+                onPostExecute(result);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(BatchEventResult result) {
+            sendAsyncToast(getResources().getString(R.string.welcome) + " " +
+                    DataCache.getInstance().getUser().getFirstName() + " " + DataCache.getInstance().getUser().getLastName());
         }
     }
 }

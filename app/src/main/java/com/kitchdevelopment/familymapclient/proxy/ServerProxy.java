@@ -8,17 +8,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
-import Models.AuthToken;
 import Requests.LoginRequest;
 import Requests.RegisterRequest;
-import Results.BaseResult;
-import Results.BatchResult;
-import Results.EventResult;
+import Results.BatchEventResult;
+import Results.BatchPersonResult;
 import Results.LoginOrRegisterResult;
-import Results.PersonResult;
 
 public class ServerProxy {
     final String REQUEST_METHOD_POST = "POST";
@@ -34,7 +30,7 @@ public class ServerProxy {
             connection.setRequestMethod(REQUEST_METHOD_POST);
             connection.setDoOutput(true);
             connection.setDoInput(true);
-            connection.setRequestProperty("Accept", "application/json");
+//            connection.setRequestProperty("Accept", "application/json");
             connection.connect();
 
             try {
@@ -121,26 +117,26 @@ public class ServerProxy {
         return result;
     }
 
-    public BatchResult getPeople(String authToken, String serverHost, String port) throws IOException {
+    public BatchPersonResult getPeople(String authToken, String serverHost, String port) throws IOException {
         URL url = new URL("http://" + serverHost + ":" + port + API_PATH_PERSONS);
 
         //Does not have a request body
 
         //Get response and cache data
         String responseString = getUrlStringGET(url, authToken);
-        BatchResult result = GsonSerializer.deserialize(responseString, BatchResult.class);
+        BatchPersonResult result = GsonSerializer.deserialize(responseString, BatchPersonResult.class);
         DataCache.getInstance().cachePersonData(result);
         return result;
     }
 
-    public BatchResult getEvents(String authToken, String serverHost, String port) throws IOException {
+    public BatchEventResult getEvents(String authToken, String serverHost, String port) throws IOException {
         URL url = new URL("http://" + serverHost + ":" + port + API_PATH_EVENTS);
 
         //Does not have a request body
 
         //Get response and cache data
         String responseString = getUrlStringGET(url, authToken);
-        BatchResult result = GsonSerializer.deserialize(responseString, BatchResult.class);
+        BatchEventResult result = GsonSerializer.deserialize(responseString, BatchEventResult.class);
         DataCache.getInstance().cacheEventData(result);
         return result;
     }

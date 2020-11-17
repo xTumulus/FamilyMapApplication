@@ -7,9 +7,8 @@ import java.util.Set;
 import Models.AuthToken;
 import Models.Person;
 import Models.User;
-import Results.BatchResult;
-import Results.EventResult;
-import Results.PersonResult;
+import Results.BatchEventResult;
+import Results.BatchPersonResult;
 
 public class DataCache {
 
@@ -84,17 +83,14 @@ public class DataCache {
         return eventTypes;
     }
 
-    public void cachePersonData(BatchResult people) {
+    public void cachePersonData(BatchPersonResult people) {
         ArrayList<Person> persons = people.getData();
         Person userPerson = persons.get(0);
-        user.setFirstName(userPerson.getFirstName());
-        user.setLastName(userPerson.getLastName());
-        user.setGender(userPerson.getGender());
-        user.setPersonId(userPerson.getPersonID());
+        user = new User("","","", userPerson.getFirstName(), userPerson.getLastName(), userPerson.getGender(), userPerson.getPersonID());
         System.out.println(people.toString());
     }
 
-    public void cacheEventData(BatchResult events) {
+    public void cacheEventData(BatchEventResult events) {
         System.out.println(events.toString());
     }
 }
