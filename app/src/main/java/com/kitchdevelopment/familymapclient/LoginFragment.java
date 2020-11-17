@@ -2,6 +2,8 @@ package com.kitchdevelopment.familymapclient;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +37,9 @@ public class LoginFragment extends Fragment {
     final String API_PATH_LOGIN = "/user/login";
     final String API_PATH_REGISTER = "/user/register";
 
+    Button loginButton;
+    Button registerButton;
+
     String userName;
     String password;
     String email;
@@ -54,16 +59,25 @@ public class LoginFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_login, container, false);
 
-        //Form fields
+        //Text fields
         final EditText userNameField = v.findViewById(R.id.userName);
         final EditText passwordField = v.findViewById(R.id.password);
         final EditText hostField = v.findViewById(R.id.serverHost);
-        final EditText portText = v.findViewById(R.id.serverPort);
+        final EditText portField = v.findViewById(R.id.serverPort);
         final EditText emailField = v.findViewById(R.id.email);
         final EditText firstNameField = v.findViewById(R.id.firstName);
         final EditText lastNameField = v.findViewById(R.id.lastName);
 
+        //Radiogroup
         final RadioGroup genderRadioGroup = v.findViewById(R.id.genderRadioGroup);
+
+        //Buttons
+        loginButton = v.findViewById(R.id.login_button);
+        registerButton = v.findViewById(R.id.register_button);
+        loginButton.setEnabled(false);
+        registerButton.setEnabled(false);
+
+        //Radiogroup listener
         genderRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -73,20 +87,85 @@ public class LoginFragment extends Fragment {
                 else {
                     gender = 'f';
                 }
+                if(userNameField.getText() != null && !userNameField.getText().toString().isEmpty()
+                        && passwordField.getText() != null && !passwordField.getText().toString().isEmpty()
+                        && hostField.getText() != null && !hostField.getText().toString().isEmpty()
+                        && portField.getText() != null && !portField.getText().toString().isEmpty()) {
+
+                    loginButton.setEnabled(true);
+
+                    if(firstNameField.getText() != null && !firstNameField.getText().toString().isEmpty()
+                            && lastNameField.getText() != null && !lastNameField.getText().toString().isEmpty()
+                            && emailField.getText() != null && !emailField.getText().toString().isEmpty()
+                            && gender != 0){
+
+                        registerButton.setEnabled(true);
+                    }
+                    else {
+                        registerButton.setEnabled(false);
+                    }
+                }
+                else {
+                    loginButton.setEnabled(false);
+                }
             }
         });
 
-        final Button loginButton = v.findViewById(R.id.login_button);
+        //Text field listeners
+        TextWatcher validateFields = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {};
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {};
+
+            @Override
+            public void afterTextChanged(Editable s){
+                if(userNameField.getText() != null && !userNameField.getText().toString().isEmpty()
+                        && passwordField.getText() != null && !passwordField.getText().toString().isEmpty()
+                        && hostField.getText() != null && !hostField.getText().toString().isEmpty()
+                        && portField.getText() != null && !portField.getText().toString().isEmpty()) {
+
+                    loginButton.setEnabled(true);
+
+                    if(firstNameField.getText() != null && !firstNameField.getText().toString().isEmpty()
+                            && lastNameField.getText() != null && !lastNameField.getText().toString().isEmpty()
+                            && emailField.getText() != null && !emailField.getText().toString().isEmpty()
+                            && gender != 0){
+
+                        registerButton.setEnabled(true);
+                    }
+                    else {
+                        registerButton.setEnabled(false);
+                    }
+                }
+                else {
+                    loginButton.setEnabled(false);
+                }
+            };
+        };
+
+        userNameField.addTextChangedListener(validateFields);
+        passwordField.addTextChangedListener(validateFields);
+        hostField.addTextChangedListener(validateFields);
+        portField.addTextChangedListener(validateFields);
+        firstNameField.addTextChangedListener(validateFields);
+        lastNameField.addTextChangedListener(validateFields);
+        emailField.addTextChangedListener(validateFields);
+
+        //Button Watchers
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 System.out.println("clicked login");
+                loginButton.setEnabled(false);
+                registerButton.setEnabled(false);
 
                 //get form values
                 userName = userNameField.getText().toString();
                 password = passwordField.getText().toString();
                 serverHost = hostField.getText().toString();
-                serverPort = portText.getText().toString();
+                serverPort = portField.getText().toString();
 
                 try {
                     StringBuilder requestString = new StringBuilder();
@@ -99,11 +178,12 @@ public class LoginFragment extends Fragment {
             }
         });
 
-        final Button registerButton = v.findViewById(R.id.register_button);
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 System.out.println("clicked register");
+                loginButton.setEnabled(false);
+                registerButton.setEnabled(false);
 
                 //get form values
                 userName = userNameField.getText().toString();
@@ -112,7 +192,7 @@ public class LoginFragment extends Fragment {
                 firstName = firstNameField.getText().toString();
                 lastName = lastNameField.getText().toString();
                 serverHost = hostField.getText().toString();
-                serverPort = portText.getText().toString();
+                serverPort = portField.getText().toString();
                 //gender determined in radiogroup listener
 
                 try {
