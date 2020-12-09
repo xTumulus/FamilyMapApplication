@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
@@ -24,13 +23,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import Models.User;
 import Requests.LoginRequest;
 import Requests.RegisterRequest;
-import Results.BaseResult;
 import Results.BatchEventResult;
 import Results.LoginOrRegisterResult;
-import Results.PersonResult;
 
 public class LoginFragment extends Fragment {
 
@@ -153,13 +149,11 @@ public class LoginFragment extends Fragment {
         lastNameField.addTextChangedListener(validateFields);
         emailField.addTextChangedListener(validateFields);
 
-        //Button Watchers
+        //Button Listeners
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 System.out.println("clicked login");
-                loginButton.setEnabled(false);
-                registerButton.setEnabled(false);
 
                 //get form values
                 userName = userNameField.getText().toString();
@@ -172,6 +166,7 @@ public class LoginFragment extends Fragment {
                     requestString.append("http://" + serverHost + ":" + serverPort + API_PATH_LOGIN);
                     URL url = new URL(requestString.toString());
                     new LoginUserTask().execute(url);
+//                    LoginOrRegisterResult result = new LoginUserTask().execute(url);
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
@@ -182,8 +177,6 @@ public class LoginFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 System.out.println("clicked register");
-                loginButton.setEnabled(false);
-                registerButton.setEnabled(false);
 
                 //get form values
                 userName = userNameField.getText().toString();
@@ -216,6 +209,12 @@ public class LoginFragment extends Fragment {
         });
     }
 
+    private void changeToMapFragment() {
+        if(getContext() != null) {
+            ((MainActivity)this.getActivity()).changeToMapFragment();
+        }
+    }
+
     public class LoginUserTask extends AsyncTask<URL, Void, LoginOrRegisterResult> {
         @Override
         protected LoginOrRegisterResult doInBackground(URL... urls) {
@@ -227,7 +226,6 @@ public class LoginFragment extends Fragment {
                 if(result.isSuccess()) {
                     new GetFamilyDataTask().execute(result);
                 }
-                onPostExecute(result);
                 return result;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -257,7 +255,6 @@ public class LoginFragment extends Fragment {
                 if(result.isSuccess()) {
                     new GetFamilyDataTask().execute(result);
                 }
-                onPostExecute(result);
                 return result;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -284,7 +281,7 @@ public class LoginFragment extends Fragment {
             try {
                 serverProxy.getPeople(results[0].getAuthToken(), serverHost, serverPort);
                 BatchEventResult result = serverProxy.getEvents(results[0].getAuthToken(), serverHost, serverPort);
-                onPostExecute(result);
+                return result;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -296,6 +293,11 @@ public class LoginFragment extends Fragment {
         protected void onPostExecute(BatchEventResult result) {
             sendAsyncToast(getResources().getString(R.string.welcome) + " " +
                     DataCache.getInstance().getUser().getFirstName() + " " + DataCache.getInstance().getUser().getLastName());
+            DataCache dataCache = DataCache.getInstance();
+            if(dataCache.syncSuccess()) {
+
+            }
+            changeToMapFragment();
         }
     }
 }

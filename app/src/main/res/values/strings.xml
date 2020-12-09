@@ -17,4 +17,23 @@
     <string name="register_failed_message">Registration attempt failed! Information was incomplete or user is already registered.</string>
     <string name="register_success_message">Registered new user!</string>
     <string name="welcome">Welcome!</string>
+    <string name="lifeEvents">Life Events</string>
+    <string name="family">Family</string>
+    <string name="lifeStoryLines">Life Story Lines</string>
+    <string name="lifeStoryLinesHint">SHOW LIFE STORY LINES</string>
+    <string name="familyTreeLines">Family Tree Lines</string>
+    <string name="familyTreeLinesHint">SHOW FAMILY TREE LINES</string>
+    <string name="spouseLines">Spouse Lines</string>
+    <string name="spouseLinesHint">SHOW SPOUSE LINES</string>
+    <string name="fathersSide">Father\'s Side</string>
+    <string name="fathersSideHint">FILTER BY FATHER\'S SIDE OF THE FAMILY</string>
+    <string name="mothersSide">Mother\'s Side</string>
+    <string name="mothersSideHint">FILTER BY MOTHER\'S SIDE OF THE FAMILY</string>
+    <string name="maleEvents">Male Events</string>
+    <string name="maleEventsHint">FILTER EVENTS BASED ON GENDER</string>
+    <string name="femaleEvents">Female Events</string>
+    <string name="femaleEventsHint">FILTER EVENTS BASED ON GENDER</string>
+    <string name="logout">Logout</string>
+    <string name="logoutHint">RETURN TO LOGIN SCREEN</string>
+    <string name="mapPrompt">Click on a marker to see event details</string>
 </resources>
