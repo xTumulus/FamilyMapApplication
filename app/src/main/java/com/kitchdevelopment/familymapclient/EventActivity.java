@@ -41,12 +41,5 @@ public class EventActivity extends AppCompatActivity {
                 .add(R.id.fragment_container, mapFragment)
                 .commit();
         }
-
-//        mapFragment.onSelectEvent(event);
     }
-//
-//    @Override
-//    protected void onResumeFragments() {
-//        mapFragment.onSelectEvent(event);
-//    }
 }

@@ -34,6 +34,65 @@ public class DataCache {
     boolean showSpouseLines = true;
     boolean showFamilyTreeLines = true;
     boolean showLifeStoryLine = true;
+    boolean showFathersSideEvents = true;
+    boolean showMothersSideEvents = true;
+    boolean showMaleEvents = true;
+    boolean showFemaleEvents = true;
+
+    //People
+    private final Map<String, Person> familyMembers = new HashMap<>();
+
+    //Ancestral Family
+    private final Set<Person> patrilinearMales = new HashSet<>();
+    private final Set<Person> patrilinearFemales = new HashSet<>();
+    private final Set<Person> matrilinearMales = new HashSet<>();
+    private final Set<Person> matrilinearFemales = new HashSet<>();
+
+    //Events
+    private final ArrayList<String> eventTypes = new ArrayList<>();
+    private final Map<String, Event> familyEvents = new HashMap<>();
+    private final Map<String, ArrayList<Event>> familyEventsByPerson = new HashMap<>();
+
+    private DataCache() {};
+
+    public static DataCache getInstance() {
+        if(instance == null) {
+            instance = new DataCache();
+        }
+        return instance;
+    }
+
+    public boolean showFathersSideEvents() {
+        return showFathersSideEvents;
+    }
+
+    public void setShowFathersSideEvents(boolean showFathersSideEvents) {
+        this.showFathersSideEvents = showFathersSideEvents;
+    }
+
+    public boolean showMothersSideEvents() {
+        return showMothersSideEvents;
+    }
+
+    public void setShowMothersSideEvents(boolean showMothersSideEvents) {
+        this.showMothersSideEvents = showMothersSideEvents;
+    }
+
+    public boolean showMaleEvents() {
+        return showMaleEvents;
+    }
+
+    public void setShowMaleEvents(boolean showMaleEvents) {
+        this.showMaleEvents = showMaleEvents;
+    }
+
+    public boolean showFemaleEvents() {
+        return showFemaleEvents;
+    }
+
+    public void setShowFemaleEvents(boolean showFemaleEvents) {
+        this.showFemaleEvents = showFemaleEvents;
+    }
 
     public boolean showSpouseLines() {
         return showSpouseLines;
@@ -83,33 +142,6 @@ public class DataCache {
         isLoggedIn = loggedIn;
     }
 
-    //People
-    private final Map<String, Person> familyMembers = new HashMap<>();
-
-    //Immediate Family
-    private final Set<Person> immediateMales = new HashSet<>();
-    private final Set<Person> immediateFemales = new HashSet<>();
-
-    //Ancestral Family
-    private final Set<Person> patrilinearMales = new HashSet<>();
-    private final Set<Person> patrilinearFemales = new HashSet<>();
-    private final Set<Person> matrilinearMales = new HashSet<>();
-    private final Set<Person> matrilinearFemales = new HashSet<>();
-
-    //Events
-    private final ArrayList<String> eventTypes = new ArrayList<>();
-    private final Map<String, Event> familyEvents = new HashMap<>();
-    private final Map<String, ArrayList<Event>> familyEventsByPerson = new HashMap<>();
-
-    private DataCache() {};
-
-    public static DataCache getInstance() {
-        if(instance == null) {
-            instance = new DataCache();
-        }
-        return instance;
-    }
-
     public AuthToken getAuthToken() {
         return authToken;
     }
@@ -128,14 +160,6 @@ public class DataCache {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public Set<Person> getImmediateMales() {
-        return immediateMales;
-    }
-
-    public Set<Person> getImmediateFemales() {
-        return immediateFemales;
     }
 
     public Set<Person> getPatrilinearMales() {
