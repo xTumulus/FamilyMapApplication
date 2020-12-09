@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 
@@ -122,14 +121,13 @@ public class PersonActivity extends AppCompatActivity {
 
         //Events
         List<ListItem> lifeEvents = new ArrayList<ListItem>();
-        ArrayList<Event> lifeEventsList = dataCache.getPersonEvents(person.getPersonID());
-        //orderLifeEventsList();
+        ArrayList<Event> lifeEventsList = dataCache.getChronologicalPersonEvents(person.getPersonID());
         for(int i = 0; i < lifeEventsList.size(); ++i) {
             Event temp = lifeEventsList.get(i);
             Person tempPerson = dataCache.getPersonById(temp.getPersonID());
             ListItem item = new ListItem(temp.getEventID(),
                     temp.getEventType() + ": " + temp.getCity() + ", " + temp.getCountry()
-                          + temp.getYear() + "\n" + tempPerson.getFirstName() + " " + tempPerson.getLastName());
+                          + " (" + temp.getYear() + ")" + "\n" + tempPerson.getFirstName() + " " + tempPerson.getLastName());
             lifeEvents.add(item);
         }
 
@@ -137,15 +135,15 @@ public class PersonActivity extends AppCompatActivity {
         List<ListItem> family = new ArrayList<ListItem>();
         Person father = dataCache.getPersonById(person.getFatherID());
         if(father != null) {
-            family.add(new ListItem(father.getPersonID(), father.getFirstName() + father.getLastName() + "\n" + "Father"));
+            family.add(new ListItem(father.getPersonID(), father.getFirstName() + " " + father.getLastName() + "\n" + "Father"));
         }
         Person mother = dataCache.getPersonById(person.getMotherID());
         if(mother != null) {
-            family.add(new ListItem(mother.getPersonID(), mother.getFirstName() + mother.getLastName() + "\n" + "Mother"));
+            family.add(new ListItem(mother.getPersonID(), mother.getFirstName() + " " + mother.getLastName() + "\n" + "Mother"));
         }
         Person spouse = dataCache.getPersonById(person.getSpouseID());
         if(spouse != null) {
-            family.add(new ListItem(spouse.getPersonID(), spouse.getFirstName() + spouse.getLastName() + "\n" + "Spouse"));
+            family.add(new ListItem(spouse.getPersonID(), spouse.getFirstName() + " " + spouse.getLastName() + "\n" + "Spouse"));
         }
         ArrayList<Person> children = dataCache.getChildren(person.getPersonID());
         for(int i = 0; i < children.size(); ++i) {
@@ -155,9 +153,5 @@ public class PersonActivity extends AppCompatActivity {
 
         listDataChildren.put(listDataHeaders.get(0), lifeEvents);
         listDataChildren.put(listDataHeaders.get(1), family);
-    }
-
-    private void orderLifeEventsList(List<Event> lifeEventsList) {
-
     }
 }

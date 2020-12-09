@@ -6,4 +6,5 @@
     <color name="male_icon">#6CA0DC</color>
     <color name="female_icon">#F8B9D4</color>
     <color name="android_icon">#A4C639</color>
+    <color name="black">#000000</color>
 </resources>

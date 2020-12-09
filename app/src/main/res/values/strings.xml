@@ -36,4 +36,5 @@
     <string name="logout">Logout</string>
     <string name="logoutHint">RETURN TO LOGIN SCREEN</string>
     <string name="mapPrompt">Click on a marker to see event details</string>
+    <string name="searchPrompt">enter search here</string>
 </resources>

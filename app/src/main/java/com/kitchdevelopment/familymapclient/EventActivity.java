@@ -1,8 +1,9 @@
 package com.kitchdevelopment.familymapclient;
 
+import android.content.Context;
 import android.os.Bundle;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
+import android.util.AttributeSet;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
@@ -22,6 +23,11 @@ public class EventActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        String eventId = getIntent().getStringExtra("eventId");
+        event = dataCache.getEventById(eventId);
+        dataCache.setSelectedEvent(event);
+        dataCache.setFromEventView(true);
+
         super.onCreate(savedInstanceState);
         Iconify.with(new FontAwesomeModule());
         setContentView(R.layout.activity_event);
@@ -36,8 +42,11 @@ public class EventActivity extends AppCompatActivity {
                 .commit();
         }
 
-        String eventId = getIntent().getStringExtra("eventId");
-        event = dataCache.getEventById(eventId);
-        mapFragment.onSelectEvent(event);
+//        mapFragment.onSelectEvent(event);
     }
+//
+//    @Override
+//    protected void onResumeFragments() {
+//        mapFragment.onSelectEvent(event);
+//    }
 }

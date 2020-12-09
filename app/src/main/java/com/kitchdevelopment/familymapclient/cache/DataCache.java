@@ -24,7 +24,56 @@ public class DataCache {
 
     //User
     private User user;
+
+    //Application State
     boolean isLoggedIn = false;
+    boolean fromEventView = false;
+    Event selectedEvent = null;
+
+    //Settings
+    boolean showSpouseLines = true;
+    boolean showFamilyTreeLines = true;
+    boolean showLifeStoryLine = true;
+
+    public boolean showSpouseLines() {
+        return showSpouseLines;
+    }
+
+    public void setShowSpouseLines(boolean showSpouseLines) {
+        this.showSpouseLines = showSpouseLines;
+    }
+
+    public boolean showFamilyTreeLines() {
+        return showFamilyTreeLines;
+    }
+
+    public void setShowFamilyTreeLines(boolean showFamilyTreeLines) {
+        this.showFamilyTreeLines = showFamilyTreeLines;
+    }
+
+    public boolean showLifeStoryLine() {
+        return showLifeStoryLine;
+    }
+
+    public void setShowLifeStoryLine(boolean showLifeStoryLine) {
+        this.showLifeStoryLine = showLifeStoryLine;
+    }
+
+    public Event getSelectedEvent() {
+        return selectedEvent;
+    }
+
+    public void setSelectedEvent(Event selectedEvent) {
+        this.selectedEvent = selectedEvent;
+    }
+
+    public boolean isFromEventView() {
+        return fromEventView;
+    }
+
+    public void setFromEventView(boolean fromEventView) {
+        this.fromEventView = fromEventView;
+    }
 
     public boolean isLoggedIn() {
         return isLoggedIn;
@@ -125,6 +174,30 @@ public class DataCache {
         return familyEventsByPerson.get(personId);
     }
 
+    public ArrayList<Event> getChronologicalPersonEvents(String personId) {
+        ArrayList<Event> temp = new ArrayList<>(familyEventsByPerson.get(personId));
+        ArrayList<Event> sortedEvents = new ArrayList<Event>();
+        while(!temp.isEmpty()) {
+            Event earliestEvent = null;
+            for(Event event : temp) {
+                if(earliestEvent == null) {
+                    earliestEvent = event;
+                }
+                else {
+                    if(event.getEventType().equalsIgnoreCase("birth")) {
+                        earliestEvent = event;
+                    }
+                    else if(!event.getEventType().equalsIgnoreCase("death") && event.getYear() < earliestEvent.getYear()) {
+                        earliestEvent = event;
+                    }
+                }
+            }
+            sortedEvents.add(earliestEvent);
+            temp.remove(earliestEvent);
+        }
+        return sortedEvents;
+    }
+
     public void cachePersonData(BatchPersonResult personResults) {
         ArrayList<Person> persons = personResults.getData();
         Person userPerson = persons.get(0);
@@ -188,13 +261,32 @@ public class DataCache {
                 if(person.getFatherID().equals(personId)) {
                     children.add(person);
                 }
-            }
-            else if(person.getMotherID() != null) {
-                if(person.getMotherID().equals(personId)) {
-                    children.add(person);
+                else if(person.getMotherID() != null) {
+                    if(person.getMotherID().equals(personId)) {
+                        children.add(person);
+                    }
                 }
             }
         }
         return children;
+    }
+
+    public Event getEarliestEvent(String personId) {
+        ArrayList<Event> personEvents = getPersonEvents(personId);
+        Event earliestEvent = null;
+        for(Event event : personEvents) {
+            if(earliestEvent == null) {
+                earliestEvent = event;
+            }
+            else {
+                if(event.getEventType().equalsIgnoreCase("birth")) {
+                    return event;
+                }
+                else if(event.getYear() < earliestEvent.getYear()) {
+                    earliestEvent = event;
+                }
+            }
+        }
+        return earliestEvent;
     }
 }
