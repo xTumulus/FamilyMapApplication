@@ -1,12 +1,13 @@
 package com.kitchdevelopment.familymapclient.cache;
 
+import com.google.android.gms.maps.GoogleMap;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import Models.AuthToken;
 import Models.Event;
 import Models.Person;
 import Models.User;
@@ -16,14 +17,13 @@ import Results.BatchPersonResult;
 public class DataCache {
 
     private static final int FIRST_ANCESTOR_INDEX = 1;
-    private static final int LAST_PATRILINEAR_ANCESTOR_INDEX = 15;
-    private static final int LAST_MATRILINEAR_ANCESTOR_INDEX = 1;
 
     private static DataCache instance;
-    private AuthToken authToken;
+//    private AuthToken authToken;
 
     //User
-    private User user;
+//    private User user;
+    private Person userPerson;
 
     //Application State
     boolean isLoggedIn = false;
@@ -39,10 +39,8 @@ public class DataCache {
     boolean showMaleEvents = true;
     boolean showFemaleEvents = true;
 
-    //People
+    //Family
     private final Map<String, Person> familyMembers = new HashMap<>();
-
-    //Ancestral Family
     private final Set<Person> patrilinearMales = new HashSet<>();
     private final Set<Person> patrilinearFemales = new HashSet<>();
     private final Set<Person> matrilinearMales = new HashSet<>();
@@ -51,7 +49,9 @@ public class DataCache {
     //Events
     private final ArrayList<String> eventTypes = new ArrayList<>();
     private final Map<String, Event> familyEvents = new HashMap<>();
-    private final Map<String, ArrayList<Event>> familyEventsByPerson = new HashMap<>();
+    private Map<String, Event> filteredFamilyEvents = new HashMap<>();
+    private final Map<String, ArrayList<Event>> eventsByPerson = new HashMap<>();
+    private Map<String, ArrayList<Event>> filteredEventsByPerson = new HashMap<>();
 
     private DataCache() {};
 
@@ -62,6 +62,41 @@ public class DataCache {
         return instance;
     }
 
+    //User Methods
+    public Person getUserPerson() {
+        return userPerson;
+    }
+
+//    public void setUser(User user) {
+//        this.user = user;
+//    }
+
+    //Application State Methods
+    public boolean isFromEventView() {
+        return fromEventView;
+    }
+
+    public void setFromEventView(boolean fromEventView) {
+        this.fromEventView = fromEventView;
+    }
+
+    public boolean isLoggedIn() {
+        return isLoggedIn;
+    }
+
+    public void setLoggedIn(boolean loggedIn) {
+        isLoggedIn = loggedIn;
+    }
+
+    public Event getSelectedEvent() {
+        return selectedEvent;
+    }
+
+    public void setSelectedEvent(Event selectedEvent) {
+        this.selectedEvent = selectedEvent;
+    }
+
+    //Settings methods
     public boolean showFathersSideEvents() {
         return showFathersSideEvents;
     }
@@ -118,70 +153,15 @@ public class DataCache {
         this.showLifeStoryLine = showLifeStoryLine;
     }
 
-    public Event getSelectedEvent() {
-        return selectedEvent;
-    }
+//    public AuthToken getAuthToken() {
+//        return authToken;
+//    }
+//
+//    public void setAuthToken(AuthToken authToken) {
+//        this.authToken = authToken;
+//    }
 
-    public void setSelectedEvent(Event selectedEvent) {
-        this.selectedEvent = selectedEvent;
-    }
-
-    public boolean isFromEventView() {
-        return fromEventView;
-    }
-
-    public void setFromEventView(boolean fromEventView) {
-        this.fromEventView = fromEventView;
-    }
-
-    public boolean isLoggedIn() {
-        return isLoggedIn;
-    }
-
-    public void setLoggedIn(boolean loggedIn) {
-        isLoggedIn = loggedIn;
-    }
-
-    public AuthToken getAuthToken() {
-        return authToken;
-    }
-
-    public void setAuthToken(AuthToken authToken) {
-        this.authToken = authToken;
-    }
-
-    public Map<String, Event> getFamilyEventsMap() {
-        return familyEvents;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Set<Person> getPatrilinearMales() {
-        return patrilinearMales;
-    }
-
-    public Set<Person> getPatrilinearFemales() {
-        return patrilinearFemales;
-    }
-
-    public Set<Person> getMatrilinearMales() {
-        return matrilinearMales;
-    }
-
-    public Set<Person> getMatrilinearFemales() {
-        return matrilinearFemales;
-    }
-
-    public ArrayList<String> getEventTypes() {
-        return eventTypes;
-    }
-
+    //Family methods
     public Map<String, Person> getFamilyMembersMap() {
         return familyMembers;
     }
@@ -190,16 +170,25 @@ public class DataCache {
         return familyMembers.get(personId);
     }
 
+    //Events
+    public ArrayList<String> getEventTypes() {
+        return eventTypes;
+    }
+
+    public Map<String, Event> getFamilyEventsMap() {
+        return filteredFamilyEvents;
+    }
+
     public Event getEventById(String eventId) {
-        return familyEvents.get(eventId);
+        return filteredFamilyEvents.get(eventId);
     }
 
     public ArrayList<Event> getPersonEvents(String personId) {
-        return familyEventsByPerson.get(personId);
+        return filteredEventsByPerson.get(personId);
     }
 
     public ArrayList<Event> getChronologicalPersonEvents(String personId) {
-        ArrayList<Event> temp = new ArrayList<>(familyEventsByPerson.get(personId));
+        ArrayList<Event> temp = new ArrayList<>(filteredEventsByPerson.get(personId));
         ArrayList<Event> sortedEvents = new ArrayList<Event>();
         while(!temp.isEmpty()) {
             Event earliestEvent = null;
@@ -222,32 +211,44 @@ public class DataCache {
         return sortedEvents;
     }
 
+    //Data Caching methods
     public void cachePersonData(BatchPersonResult personResults) {
         ArrayList<Person> persons = personResults.getData();
-        Person userPerson = persons.get(0);
-        setUser(new User("","","", userPerson.getFirstName(), userPerson.getLastName(), userPerson.getGender(), userPerson.getPersonID()));
-        for(int i = 0; i < persons.size(); ++i) {
+        userPerson = persons.get(0);
+        familyMembers.put(userPerson.getPersonID(), userPerson);
+        if(userPerson.getGender() == 'm') {
+            patrilinearMales.add(userPerson);
+            matrilinearMales.add(userPerson);
+        }
+        else {
+            patrilinearFemales.add(userPerson);
+            matrilinearFemales.add(userPerson);
+        }
+//        setUser(new User("","","", userPerson.getFirstName(), userPerson.getLastName(), userPerson.getGender(), userPerson.getPersonID()));
+//        for(int i = 0; i < persons.size(); ++i) {
+//            Person temp = persons.get(i);
+//            familyMembers.put(temp.getPersonID(), temp);
+//        }
+        for(int i = FIRST_ANCESTOR_INDEX; i < persons.size() / 2; ++i) {
             Person temp = persons.get(i);
             familyMembers.put(temp.getPersonID(), temp);
+            if(temp.getGender() == 'm') {
+                patrilinearMales.add(temp);
+            }
+            else {
+                patrilinearFemales.add(temp);
+            }
         }
-//        for(int i = FIRST_ANCESTOR_INDEX; i < LAST_PATRILINEAR_ANCESTOR_INDEX; ++i) {
-//            Person temp = persons.get(i);
-//            if(temp.getGender() == 'm') {
-//                patrilinearMales.add(temp);
-//            }
-//            else {
-//                patrilinearFemales.add(temp);
-//            }
-//        }
-//        for(int i = LAST_PATRILINEAR_ANCESTOR_INDEX + 1; i < LAST_MATRILINEAR_ANCESTOR_INDEX; ++i) {
-//            Person temp = persons.get(i);
-//            if(temp.getGender() == 'm') {
-//                matrilinearMales.add(temp);
-//            }
-//            else {
-//                matrilinearFemales.add(temp);
-//            }
-//        }
+        for(int i = persons.size() / 2; i < persons.size(); ++i) {
+            Person temp = persons.get(i);
+            familyMembers.put(temp.getPersonID(), temp);
+            if(temp.getGender() == 'm') {
+                matrilinearMales.add(temp);
+            }
+            else {
+                matrilinearFemales.add(temp);
+            }
+        }
     }
 
     public void cacheEventData(BatchEventResult eventsResult) {
@@ -255,24 +256,25 @@ public class DataCache {
         for (int i = 0 ; i < events.size(); ++i) {
             Event temp = events.get(i);
             familyEvents.put(temp.getEventID(), temp);
-            if(familyEventsByPerson.containsKey(temp.getPersonID())) {
-                familyEventsByPerson.get(temp.getPersonID()).add(temp);
+            if(eventsByPerson.containsKey(temp.getPersonID())) {
+                eventsByPerson.get(temp.getPersonID()).add(temp);
             }
             else {
                 ArrayList<Event> tempArray = new ArrayList<>();
                 tempArray.add(temp);
-                familyEventsByPerson.put(temp.getPersonID(), tempArray);
+                eventsByPerson.put(temp.getPersonID(), tempArray);
             }
             String eventType = temp.getEventType().toLowerCase();
             if (!eventTypes.contains(eventType)) {
                 eventTypes.add(eventType);
             }
         }
-        System.out.println(familyEvents.toString());
+        filteredFamilyEvents = new HashMap<>(familyEvents);
+        filteredEventsByPerson = new HashMap<>(eventsByPerson);
     }
 
     public boolean syncSuccess() {
-        if(user.getFirstName() != null) {
+        if(userPerson.getFirstName() != null) {
             return true;
         }
         return false;
@@ -298,19 +300,90 @@ public class DataCache {
     public Event getEarliestEvent(String personId) {
         ArrayList<Event> personEvents = getPersonEvents(personId);
         Event earliestEvent = null;
-        for(Event event : personEvents) {
-            if(earliestEvent == null) {
-                earliestEvent = event;
-            }
-            else {
-                if(event.getEventType().equalsIgnoreCase("birth")) {
-                    return event;
-                }
-                else if(event.getYear() < earliestEvent.getYear()) {
+
+        if(personEvents != null) {
+            for(Event event : personEvents) {
+                if(earliestEvent == null) {
                     earliestEvent = event;
+                }
+                else {
+                    if(event.getEventType().equalsIgnoreCase("birth")) {
+                        return event;
+                    }
+                    else if(event.getYear() < earliestEvent.getYear()) {
+                        earliestEvent = event;
+                    }
                 }
             }
         }
         return earliestEvent;
+    }
+
+    public void filterEvents() {
+        filteredFamilyEvents = new HashMap<>();
+        filteredEventsByPerson = new HashMap<>();
+        if(showFathersSideEvents && showMothersSideEvents && showMaleEvents && showFemaleEvents) {
+            //No events are filtered out
+            filteredFamilyEvents = new HashMap<>(familyEvents);
+            filteredEventsByPerson = new HashMap<>(eventsByPerson);
+        }
+        else {
+            if(showMaleEvents()) {
+                if(userPerson.getGender() == 'm') {
+                    String userPersonId = userPerson.getPersonID();
+                    filteredEventsByPerson.put(userPersonId, eventsByPerson.get(userPersonId));
+                }
+                else {
+                    String spouseId = userPerson.getSpouseID();
+                    if(spouseId != null) {
+                        filteredEventsByPerson.put(spouseId, eventsByPerson.get(spouseId));
+                    }
+                }
+            }
+            if(showFemaleEvents()) {
+                if(userPerson.getGender() == 'f') {
+                    String userPersonId = userPerson.getPersonID();
+                    filteredEventsByPerson.put(userPersonId, eventsByPerson.get(userPersonId));
+                }
+                else {
+                    String spouseId = userPerson.getSpouseID();
+                    if(spouseId != null) {
+                        filteredEventsByPerson.put(spouseId, eventsByPerson.get(spouseId));
+                    }
+                }
+            }
+            if(showFathersSideEvents) {
+                if(showMaleEvents) {
+                   for(Person person : patrilinearMales) {
+                       filteredEventsByPerson.put(person.getPersonID(), eventsByPerson.get(person.getPersonID()));
+                   }
+                }
+                if(showFemaleEvents) {
+                    for(Person person : patrilinearFemales) {
+                        filteredEventsByPerson.put(person.getPersonID(), eventsByPerson.get(person.getPersonID()));
+                    }
+                }
+            }
+            if(showMothersSideEvents) {
+                if(showMaleEvents) {
+                    for(Person person : matrilinearMales) {
+                        filteredEventsByPerson.put(person.getPersonID(), eventsByPerson.get(person.getPersonID()));
+                    }
+                }
+                if(showFemaleEvents) {
+                    for(Person person : matrilinearFemales) {
+                        filteredEventsByPerson.put(person.getPersonID(), eventsByPerson.get(person.getPersonID()));
+                    }
+                }
+            }
+            for(ArrayList<Event> events : filteredEventsByPerson.values()) {
+                for(Event event : events) {
+                    filteredFamilyEvents.put(event.getEventID(), event);
+                }
+            }
+        }
+        if(selectedEvent == null || !filteredFamilyEvents.containsValue(selectedEvent.getEventID())) {
+            selectedEvent = null;
+        }
     }
 }

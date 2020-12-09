@@ -292,7 +292,7 @@ public class LoginFragment extends Fragment {
         @Override
         protected void onPostExecute(BatchEventResult result) {
             sendAsyncToast(getResources().getString(R.string.welcome) + " " +
-                    DataCache.getInstance().getUser().getFirstName() + " " + DataCache.getInstance().getUser().getLastName());
+                    DataCache.getInstance().getUserPerson().getFirstName() + " " + DataCache.getInstance().getUserPerson().getLastName());
             DataCache dataCache = DataCache.getInstance();
             if(dataCache.syncSuccess()) {
 

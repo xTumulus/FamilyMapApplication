@@ -77,7 +77,57 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-        //TODO Add Others Here
+        fathersSideToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    dataCache.setShowFathersSideEvents(true);
+                }
+                else {
+                    dataCache.setShowFathersSideEvents(false);
+                }
+                dataCache.filterEvents();
+            }
+        });
+
+        mothersSideToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    dataCache.setShowMothersSideEvents(true);
+                }
+                else {
+                    dataCache.setShowMothersSideEvents(false);
+                }
+                dataCache.filterEvents();
+            }
+        });
+
+        maleEventToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    dataCache.setShowMaleEvents(true);
+                }
+                else {
+                    dataCache.setShowMaleEvents(false);
+                }
+                dataCache.filterEvents();
+            }
+        });
+
+        femaleEventToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    dataCache.setShowFemaleEvents(true);
+                }
+                else {
+                    dataCache.setShowFemaleEvents(false);
+                }
+                dataCache.filterEvents();
+            }
+        });
 
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,22 +145,48 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public void getButtonStates() {
-        //Default all to true
-        lifeLinesToggle.setChecked(true);
-        familyTreeLinesToggle.setChecked(true);
-        spouseLinesToggle.setChecked(true);
-        fathersSideToggle.setChecked(true);
-        mothersSideToggle.setChecked(true);
-        maleEventToggle.setChecked(true);
-        femaleEventToggle.setChecked(true);
-
-        //Check for false and change accordingly
-        if(!dataCache.showLifeStoryLine()) { lifeLinesToggle.setChecked(false); }
-        if(!dataCache.showFamilyTreeLines()) { familyTreeLinesToggle.setChecked(false); }
-        if(!dataCache.showSpouseLines()) { spouseLinesToggle.setChecked(false); }
-        if(!dataCache.showFathersSideEvents()) { fathersSideToggle.setChecked(false); }
-        if(!dataCache.showMothersSideEvents()) { mothersSideToggle.setChecked(false); }
-        if(!dataCache.showMaleEvents()) { maleEventToggle.setChecked(false); }
-        if(!dataCache.showFemaleEvents()) { femaleEventToggle.setChecked(false); }
+        //Check for value and change accordingly
+        if(!dataCache.showLifeStoryLine()) {
+            lifeLinesToggle.setChecked(false);
+        }
+        else {
+            lifeLinesToggle.setChecked(true);
+        }
+        if(!dataCache.showFamilyTreeLines()) {
+            familyTreeLinesToggle.setChecked(false);
+        }
+        else {
+            familyTreeLinesToggle.setChecked(true);
+        }
+        if(!dataCache.showSpouseLines()) {
+            spouseLinesToggle.setChecked(false);
+        }
+        else {
+            spouseLinesToggle.setChecked(true);
+        }
+        if(!dataCache.showFathersSideEvents()) {
+            fathersSideToggle.setChecked(false);
+        }
+        else {
+            fathersSideToggle.setChecked(true);
+        }
+        if(!dataCache.showMothersSideEvents()) {
+            mothersSideToggle.setChecked(false);
+        }
+        else {
+            mothersSideToggle.setChecked(true);
+        }
+        if(!dataCache.showMaleEvents()) {
+            maleEventToggle.setChecked(false);
+        }
+        else {
+            maleEventToggle.setChecked(true);
+        }
+        if(!dataCache.showFemaleEvents()) {
+            femaleEventToggle.setChecked(false);
+        }
+        else {
+            femaleEventToggle.setChecked(true);
+        }
     }
 }
