@@ -28,244 +28,216 @@ import Models.Event;
 import Models.Person;
 
 public class SearchActivity extends AppCompatActivity {
-    private static final int PERSON_VIEW_TYPE = 0;
-    private static final int EVENT_VIEW_TYPE = 1;
 
-    DataCache dataCache = DataCache.getInstance();
+	private static final int PERSON_VIEW_TYPE = 0;
+	private static final int EVENT_VIEW_TYPE = 1;
 
-    String searchString;
-    ArrayList<Person> peopleSearchResults;
-    ArrayList<Event> eventSearchResults;
+	DataCache dataCache = DataCache.getInstance();
 
-    //View Elements
-    ImageView searchIconView;
-    EditText searchBar;
-    ImageView searchCancelButton;
-    RecyclerView recyclerView;
+	String searchString;
+	ArrayList<Person> peopleSearchResults;
+	ArrayList<Event> eventSearchResults;
 
-    //Recycler View Elements
-    FamilyMapSearchAdapter adapter;
+	//View Elements
+	ImageView searchIconView;
+	EditText searchBar;
+	ImageView searchCancelButton;
+	RecyclerView recyclerView;
 
-    //Icons
-    Drawable searchIcon;
-    Drawable cancelIcon;
+	//Recycler View Elements
+	FamilyMapSearchAdapter adapter;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+	//Icons
+	Drawable searchIcon;
+	Drawable cancelIcon;
 
-        //View Elements
-        searchIconView = findViewById(R.id.search_bar_icon);
-        searchBar = findViewById(R.id.search_bar);
-        searchCancelButton = findViewById(R.id.search_cancel_button);
-        recyclerView = (RecyclerView) findViewById(R.id.searchListView);
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_search);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        //Set Icons
-        searchIcon = new IconDrawable(this, FontAwesomeIcons.fa_search)
-                .colorRes(R.color.black).sizeDp(30);
-        cancelIcon = new IconDrawable(this, FontAwesomeIcons.fa_times)
-                .colorRes(R.color.black).sizeDp(30);
-        searchIconView.setImageDrawable(searchIcon);
-        searchCancelButton.setImageDrawable(cancelIcon);
+		//View Elements
+		searchIconView = findViewById(R.id.search_bar_icon);
+		searchBar = findViewById(R.id.search_bar);
+		searchCancelButton = findViewById(R.id.search_cancel_button);
+		recyclerView = (RecyclerView) findViewById(R.id.searchListView);
 
-        //Initialize data
-        eventSearchResults = new ArrayList<>();
-        peopleSearchResults = new ArrayList<>();
-        //DEBUG TEST (correct above)
-//        ArrayList<Person> people = new ArrayList<Person>();
-//        people.add(dataCache.getUserPerson());
-//        people.add(dataCache.getUserPerson());
-//        people.add(dataCache.getUserPerson());
-//        people.add(dataCache.getUserPerson());
-//        peopleSearchResults = people;
-//        ArrayList<Event> events = new ArrayList<Event>();
-//        events.add(dataCache.getEarliestEvent(dataCache.getUserPerson().getPersonID()));
-//        events.add(dataCache.getEarliestEvent(dataCache.getUserPerson().getPersonID()));
-//        eventSearchResults = events;
-        //END TEST
+		//Set Icons
+		searchIcon = new IconDrawable(this, FontAwesomeIcons.fa_search)
+				.colorRes(R.color.black).sizeDp(30);
+		cancelIcon = new IconDrawable(this, FontAwesomeIcons.fa_times)
+				.colorRes(R.color.black).sizeDp(30);
+		searchIconView.setImageDrawable(searchIcon);
+		searchCancelButton.setImageDrawable(cancelIcon);
 
-        adapter = new FamilyMapSearchAdapter(peopleSearchResults, eventSearchResults);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+		//Initialize data
+		eventSearchResults = new ArrayList<>();
+		peopleSearchResults = new ArrayList<>();
 
-        //Text listener
-        TextWatcher searchStringWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {};
+		adapter = new FamilyMapSearchAdapter(peopleSearchResults, eventSearchResults);
+		recyclerView.setAdapter(adapter);
+		recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {};
+		//Text listener
+		TextWatcher searchStringWatcher = new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {};
 
-            @Override
-            public void afterTextChanged(Editable s){
-                searchString = searchBar.getText().toString().toLowerCase();
-                if(searchString != "") {
-                    eventSearchResults = searchEvents();
-                    peopleSearchResults = searchPeople();
-                    adapter = new FamilyMapSearchAdapter(peopleSearchResults, eventSearchResults);
-                    recyclerView.setAdapter(adapter);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                    System.out.println("***************************************notified adapter of data change");
-                }
-            }
-        };
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {};
 
-        searchBar.addTextChangedListener(searchStringWatcher);
+			@Override
+			public void afterTextChanged(Editable s) {
+				searchString = searchBar.getText().toString().toLowerCase();
+				if (searchString != "") {
+					eventSearchResults = searchEvents();
+					peopleSearchResults = searchPeople();
+					adapter = new FamilyMapSearchAdapter(peopleSearchResults, eventSearchResults);
+					recyclerView.setAdapter(adapter);
+					recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+				}
+			}
+		};
+		searchBar.addTextChangedListener(searchStringWatcher);
 
-        //Button Listener
-        searchCancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                searchBar.setText("");
-            }
-        });
-    }
+		//Button Listener
+		searchCancelButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				searchBar.setText("");
+			}
+		});
+	}
 
-    private ArrayList<Person> searchPeople() {
-        System.out.println("***************************************Searching people for: " + searchString);
-        ArrayList<Person> peopleFound = new ArrayList<>();
-        for(Person person : dataCache.getFamilyMembersMap().values()) {
-            if(person.getFirstName().toLowerCase().contains(searchString)
-                    || person.getLastName().toLowerCase().contains(searchString)) {
-                peopleFound.add(person);
-            }
-        }
-        System.out.println(peopleFound.toString());
-        return peopleFound;
-    }
+	private ArrayList<Person> searchPeople() {
+		ArrayList<Person> peopleFound = new ArrayList<>();
+		for (Person person : dataCache.getFamilyMembersMap().values()) {
+			if (person.getFirstName().toLowerCase().contains(searchString)
+					|| person.getLastName().toLowerCase().contains(searchString)) {
+				peopleFound.add(person);
+			}
+		}
+		return peopleFound;
+	}
 
-    private ArrayList<Event> searchEvents() {
-        System.out.println("***************************************Searching events for: " + searchString);
-        ArrayList<Event> eventsFound = new ArrayList<>();
-        for(Event event : dataCache.getFamilyEventsMap().values()) {
-            if(event.getCountry().toLowerCase().contains(searchString)
-                    || event.getCity().toLowerCase().contains(searchString)
-                    || event.getEventType().toLowerCase().contains(searchString)
-                    || Integer.toString(event.getYear()).contains(searchString)) {
-                eventsFound.add(event);
-            }
-        }
-        System.out.println(eventsFound.toString());
-        return eventsFound;
-    }
+	private ArrayList<Event> searchEvents() {
+		ArrayList<Event> eventsFound = new ArrayList<>();
+		for (Event event : dataCache.getFamilyEventsMap().values()) {
+			if (event.getCountry().toLowerCase().contains(searchString)
+					|| event.getCity().toLowerCase().contains(searchString)
+					|| event.getEventType().toLowerCase().contains(searchString)
+					|| Integer.toString(event.getYear()).contains(searchString)) {
+				eventsFound.add(event);
+			}
+		}
+		return eventsFound;
+	}
 
-    private class FamilyMapSearchAdapter extends RecyclerView.Adapter<FamilyMapSearchAdapter.ViewHolder> {
-        private final List<Person> personList;
-        private final List<Event> eventList;
+	//RecyclerView Sub Classes
+	private class FamilyMapSearchAdapter extends RecyclerView.Adapter<FamilyMapSearchAdapter.ViewHolder> {
 
-        FamilyMapSearchAdapter(List<Person> personList, List<Event> eventList) {
-            System.out.println("***************************************adapter: creating adapter");
-            this.personList = personList;
-            this.eventList = eventList;
-        }
+		private final List<Person> personList;
+		private final List<Event> eventList;
 
-        @Override
-        public int getItemViewType(int position) {
-            return position < personList.size() ? PERSON_VIEW_TYPE : EVENT_VIEW_TYPE;
-        }
+		FamilyMapSearchAdapter(List<Person> personList, List<Event> eventList) {
+			this.personList = personList;
+			this.eventList = eventList;
+		}
 
-        @NonNull
-        @Override
-        public FamilyMapSearchAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            System.out.println("***************************************adapter: creating view holder");
-            LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
-            View v = inflater.inflate(R.layout.search_result, parent, false);
+		@NonNull
+		@Override
+		public FamilyMapSearchAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+			LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
+			View v = inflater.inflate(R.layout.search_result, parent, false);
 
-            System.out.println("***************************************adapter: inflated view");
-            return new FamilyMapSearchAdapter.ViewHolder(v, viewType);
-        }
+			return new FamilyMapSearchAdapter.ViewHolder(v, viewType);
+		}
 
-        @Override
-        public void onBindViewHolder(@NonNull FamilyMapSearchAdapter.ViewHolder holder, int position) {
-            System.out.println("***************************************adapter: binding through holder");
-            if(position < personList.size()) {
-                holder.bind(personList.get(position));
-            }
-            else {
-                holder.bind(eventList.get(position - personList.size()));
-            }
-        }
+		@Override
+		public void onBindViewHolder(@NonNull FamilyMapSearchAdapter.ViewHolder holder, int position) {
+			if (position < personList.size()) {
+				holder.bind(personList.get(position));
+			} else {
+				holder.bind(eventList.get(position - personList.size()));
+			}
+		}
 
-        @Override
-        public int getItemCount() {
-            return personList.size() + eventList.size();
-        }
+		@Override
+		public int getItemViewType(int position) {
+			return position < personList.size() ? PERSON_VIEW_TYPE : EVENT_VIEW_TYPE;
+		}
 
-        private class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-            private final int viewType;
-            private Person person;
-            private Event event;
+		@Override
+		public int getItemCount() {
+			return personList.size() + eventList.size();
+		}
 
-            private final ImageView icon;
-            private final TextView title;
-            private final TextView description;
+		private class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-            Drawable maleIcon;
-            Drawable femaleIcon;
-            Drawable eventIcon;
+			private final int viewType;
+			private final ImageView icon;
+			private final TextView title;
+			private final TextView description;
+			Drawable maleIcon;
+			Drawable femaleIcon;
+			Drawable eventIcon;
+			private Person person;
+			private Event event;
 
-            ViewHolder(@NonNull View itemView, int viewType) {
-                super(itemView);
-                System.out.println("***************************************holder: creating holder");
-                this.viewType = viewType;
+			ViewHolder(@NonNull View itemView, int viewType) {
+				super(itemView);
+				this.viewType = viewType;
 
-                //Icons
-                maleIcon = new IconDrawable(getApplicationContext(), FontAwesomeIcons.fa_male).
-                        colorRes(R.color.male_icon).sizeDp(40);
-                femaleIcon = new IconDrawable(getApplicationContext(), FontAwesomeIcons.fa_female).
-                        colorRes(R.color.female_icon).sizeDp(40);
-                eventIcon = new IconDrawable(getApplicationContext(), FontAwesomeIcons.fa_map_marker)
-                        .colorRes(R.color.black).sizeDp(40);
+				//Icons
+				maleIcon = new IconDrawable(getApplicationContext(), FontAwesomeIcons.fa_male).
+						colorRes(R.color.male_icon).sizeDp(40);
+				femaleIcon = new IconDrawable(getApplicationContext(), FontAwesomeIcons.fa_female).
+						colorRes(R.color.female_icon).sizeDp(40);
+				eventIcon = new IconDrawable(getApplicationContext(), FontAwesomeIcons.fa_map_marker)
+						.colorRes(R.color.black).sizeDp(40);
 
-                itemView.setOnClickListener(this);
+				itemView.setOnClickListener(this);
 
-                icon = (ImageView) itemView.findViewById(R.id.search_result_icon);
-                title = (TextView) itemView.findViewById(R.id.search_result_title);
-                description = (TextView) itemView.findViewById(R.id.search_result_description);
-                System.out.println("***************************************holder: finished creating holder");
-            }
+				icon = (ImageView) itemView.findViewById(R.id.search_result_icon);
+				title = (TextView) itemView.findViewById(R.id.search_result_title);
+				description = (TextView) itemView.findViewById(R.id.search_result_description);
+			}
 
-            void bind(Person person) {
-                System.out.println("***************************************holder: binding person");
-                this.person = person;
-                title.setText(person.getFirstName() + " " + person.getLastName());
-                String gender;
-                if(person.getGender() == 'm') {
-                    gender = "Male";
-                    icon.setImageDrawable(maleIcon);
-                }
-                else {
-                    gender = "Female";
-                    icon.setImageDrawable(femaleIcon);
-                }
-                description.setText(gender);
-            }
+			void bind(Person person) {
+				this.person = person;
+				title.setText(person.getFirstName() + " " + person.getLastName());
+				String gender;
+				if (person.getGender() == 'm') {
+					gender = "Male";
+					icon.setImageDrawable(maleIcon);
+				} else {
+					gender = "Female";
+					icon.setImageDrawable(femaleIcon);
+				}
+				description.setText(gender);
+			}
 
-            void bind(Event event) {
-                System.out.println("***************************************holder: binding event");
-                icon.setImageDrawable(eventIcon);
-                this.event = event;
-                title.setText(event.getEventType() + ": " + event.getCity() + " " + event.getCountry() + "(" + event.getYear() + ")");
-                Person person = dataCache.getPersonById(event.getPersonID());
-                description.setText(person.getFirstName() + " " + person.getLastName());
-            }
+			void bind(Event event) {
+				icon.setImageDrawable(eventIcon);
+				this.event = event;
+				title.setText(event.getEventType() + ": " + event.getCity() + " " + event.getCountry() + "(" + event.getYear() + ")");
+				Person person = dataCache.getPersonById(event.getPersonID());
+				description.setText(person.getFirstName() + " " + person.getLastName());
+			}
 
-            @Override
-            public void onClick(View v) {
-                System.out.println("***************************************holder: entered onClick");
-                Intent intent;
-                if(viewType == PERSON_VIEW_TYPE) {
-                    intent = new Intent(getApplicationContext(), PersonActivity.class);
-                    intent.putExtra("personId", person.getPersonID());
-                }
-                else {
-                    intent = new Intent(getApplicationContext(), EventActivity.class);
-                    intent.putExtra("eventId", event.getEventID());
-                }
-                getApplicationContext().startActivity(intent);
-            }
-        }
-    }
+			@Override
+			public void onClick(View v) {
+				Intent intent;
+				if (viewType == PERSON_VIEW_TYPE) {
+					intent = new Intent(getApplicationContext(), PersonActivity.class);
+					intent.putExtra("personId", person.getPersonID());
+				} else {
+					intent = new Intent(getApplicationContext(), EventActivity.class);
+					intent.putExtra("eventId", event.getEventID());
+				}
+				getApplicationContext().startActivity(intent);
+			}
+		}
+	}
 }

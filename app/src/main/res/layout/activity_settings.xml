@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="20dp">
+    android:layout_margin="20dp"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -15,192 +13,222 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_alignParentLeft="true">
+            android:layout_alignParentLeft="true"
+            android:orientation="vertical">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/lifeStoryLines" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/lifeStoryLinesHint" />
         </LinearLayout>
+
         <ToggleButton
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
             android:id="@+id/lifeLinesToggle"
-            android:layout_alignParentRight="true"/>
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true" />
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:orientation="horizontal">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_alignParentLeft="true" >
+            android:layout_alignParentLeft="true"
+            android:orientation="vertical">
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/familyTreeLines"/>
+                android:text="@string/familyTreeLines" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/familyTreeLinesHint"/>
+                android:text="@string/familyTreeLinesHint" />
         </LinearLayout>
+
         <ToggleButton
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
             android:id="@+id/familyTreeLinesToggle"
-            android:layout_alignParentRight="true"/>
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true" />
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:orientation="horizontal">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_alignParentLeft="true">
+            android:layout_alignParentLeft="true"
+            android:orientation="vertical">
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/spouseLines"/>
+                android:text="@string/spouseLines" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/spouseLinesHint"/>
+                android:text="@string/spouseLinesHint" />
         </LinearLayout>
+
         <ToggleButton
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
             android:id="@+id/spouseLinesToggle"
-            android:layout_alignParentRight="true"/>
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true" />
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:orientation="horizontal">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_alignParentLeft="true">
+            android:layout_alignParentLeft="true"
+            android:orientation="vertical">
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/fathersSide"/>
+                android:text="@string/fathersSide" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/fathersSideHint"/>
+                android:text="@string/fathersSideHint" />
         </LinearLayout>
+
         <ToggleButton
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
             android:id="@+id/fathersSideToggle"
-            android:layout_alignParentRight="true"/>
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_alignParentLeft="true">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/mothersSide"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/mothersSideHint"/>
-        </LinearLayout>
-        <ToggleButton
             android:layout_width="60dp"
             android:layout_height="wrap_content"
-            android:id="@+id/mothersSideToggle"
-            android:layout_alignParentRight="true"/>
+            android:layout_alignParentRight="true" />
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:orientation="horizontal">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_alignParentLeft="true">
+            android:layout_alignParentLeft="true"
+            android:orientation="vertical">
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/maleEvents"/>
+                android:text="@string/mothersSide" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/mothersSideHint" />
+        </LinearLayout>
+
+        <ToggleButton
+            android:id="@+id/mothersSideToggle"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/maleEvents" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/maleEventsHint" />
         </LinearLayout>
+
         <ToggleButton
+            android:id="@+id/maleEventToggle"
             android:layout_width="60dp"
             android:layout_height="wrap_content"
-            android:id="@+id/maleEventToggle"
-            android:layout_alignParentRight="true"/>
+            android:layout_alignParentRight="true" />
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:orientation="horizontal">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_alignParentLeft="true">
+            android:layout_alignParentLeft="true"
+            android:orientation="vertical">
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/femaleEvents"/>
+                android:text="@string/femaleEvents" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/femaleEventsHint"/>
+                android:text="@string/femaleEventsHint" />
         </LinearLayout>
+
         <ToggleButton
+            android:id="@+id/femaleEventToggle"
             android:layout_width="60dp"
             android:layout_height="wrap_content"
-            android:id="@+id/femaleEventToggle"
-            android:layout_alignParentRight="true"/>
+            android:layout_alignParentRight="true" />
     </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/logout_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:clickable="true" >
+        android:clickable="true"
+        android:orientation="horizontal">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/logout"/>
+                android:text="@string/logout" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/logoutHint"/>
+                android:text="@string/logoutHint" />
         </LinearLayout>
     </LinearLayout>
 

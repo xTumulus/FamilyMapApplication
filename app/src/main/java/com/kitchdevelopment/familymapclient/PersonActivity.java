@@ -26,132 +26,130 @@ import Models.Event;
 import Models.Person;
 
 public class PersonActivity extends AppCompatActivity {
-    private static final String MALE = "Male";
-    private static final String FEMALE = "Female";
 
-    Person person;
-    DataCache dataCache = DataCache.getInstance();
+	private static final String MALE = "Male";
+	private static final String FEMALE = "Female";
 
-    //View Elements
-    TextView firstName = null;
-    TextView lastName = null;
-    TextView gender = null;
+	Person person;
+	DataCache dataCache = DataCache.getInstance();
 
-    //Expandable List View
-    ExpandableListView personExpandableListView;
-    FamilyMapListAdapter expandablelistAdapter;
-    List<String> listDataHeaders;
-    HashMap<String, List<ListItem>> listDataChildren;
+	//View Elements
+	TextView firstName = null;
+	TextView lastName = null;
+	TextView gender = null;
 
-    //Icons
-    Drawable maleIcon;
-    Drawable femaleIcon;
+	//Expandable List View
+	ExpandableListView personExpandableListView;
+	FamilyMapListAdapter expandablelistAdapter;
+	List<String> listDataHeaders;
+	HashMap<String, List<ListItem>> listDataChildren;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Iconify.with(new FontAwesomeModule());
-        setContentView(R.layout.activity_person);
+	//Icons
+	Drawable maleIcon;
+	Drawable femaleIcon;
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		Iconify.with(new FontAwesomeModule());
+		setContentView(R.layout.activity_person);
 
-        String personId = getIntent().getStringExtra("personId");
-        person = dataCache.getPersonById(personId);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        //View Elements
-        firstName = findViewById(R.id.firstNameText);
-        lastName = findViewById(R.id.lastNameText);
-        gender = findViewById(R.id.genderText);
-        personExpandableListView = (ExpandableListView) findViewById(R.id.personInfoListView);
+		String personId = getIntent().getStringExtra("personId");
+		person = dataCache.getPersonById(personId);
 
-        //Icons
-        maleIcon = new IconDrawable(this, FontAwesomeIcons.fa_male).
-                colorRes(R.color.male_icon).sizeDp(40);
-        femaleIcon = new IconDrawable(this, FontAwesomeIcons.fa_female).
-                colorRes(R.color.female_icon).sizeDp(40);
+		//View Elements
+		firstName = findViewById(R.id.firstNameText);
+		lastName = findViewById(R.id.lastNameText);
+		gender = findViewById(R.id.genderText);
+		personExpandableListView = (ExpandableListView) findViewById(R.id.personInfoListView);
 
-        //Set up Person View
-        firstName.setText(person.getFirstName());
-        lastName.setText(person.getLastName());
-        char genderChar = person.getGender();
-        if(genderChar == 'm') {
-            gender.setText(MALE);
-        }
-        else {
-            gender.setText(FEMALE);
-        }
+		//Icons
+		maleIcon = new IconDrawable(this, FontAwesomeIcons.fa_male).
+				colorRes(R.color.male_icon).sizeDp(40);
+		femaleIcon = new IconDrawable(this, FontAwesomeIcons.fa_female).
+				colorRes(R.color.female_icon).sizeDp(40);
 
-        //Set Up Expandable View
-        prepareListData();
-        expandablelistAdapter = new FamilyMapListAdapter(this, listDataHeaders, listDataChildren);
-        personExpandableListView.setAdapter(expandablelistAdapter);
-        personExpandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-            @Override
-            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                if(groupPosition == 0) {
-                    System.out.println("Clicked event");
-                    ListItem item = (ListItem) expandablelistAdapter.getChild(groupPosition, childPosition);
-                    Intent intent = new Intent(getApplicationContext(), EventActivity.class);
-                    intent.putExtra("eventId", item.getId());
-                    startActivity(intent);
-                    return true;
-                }
-                if(groupPosition == 1) {
-                    System.out.println("Clicked person");
-                    ListItem item = (ListItem) expandablelistAdapter.getChild(groupPosition, childPosition);
-                    Intent intent = new Intent(getApplicationContext(), PersonActivity.class);
-                    intent.putExtra("personId", item.getId());
-                    startActivity(intent);
-                    return true;
-                }
-                return false;
-            }
-        });
-    }
+		//Set up Person View
+		firstName.setText(person.getFirstName());
+		lastName.setText(person.getLastName());
+		char genderChar = person.getGender();
+		if (genderChar == 'm') {
+			gender.setText(MALE);
+		} else {
+			gender.setText(FEMALE);
+		}
 
-    private void prepareListData() {
-        listDataHeaders = new ArrayList<String>();
-        listDataChildren = new HashMap<String, List<ListItem>>();
+		//Set Up Expandable View
+		prepareListData();
+		expandablelistAdapter = new FamilyMapListAdapter(this, listDataHeaders, listDataChildren);
+		personExpandableListView.setAdapter(expandablelistAdapter);
+		personExpandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+			@Override
+			public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+				if (groupPosition == 0) {
+					ListItem item = (ListItem) expandablelistAdapter.getChild(groupPosition, childPosition);
+					Intent intent = new Intent(getApplicationContext(), EventActivity.class);
+					intent.putExtra("eventId", item.getId());
+					startActivity(intent);
+					return true;
+				}
+				if (groupPosition == 1) {
+					ListItem item = (ListItem) expandablelistAdapter.getChild(groupPosition, childPosition);
+					Intent intent = new Intent(getApplicationContext(), PersonActivity.class);
+					intent.putExtra("personId", item.getId());
+					startActivity(intent);
+					return true;
+				}
+				return false;
+			}
+		});
+	}
 
-        //Headers
-        listDataHeaders.add("Life Events");
-        listDataHeaders.add("Family");
+	private void prepareListData() {
+		listDataHeaders = new ArrayList<String>();
+		listDataChildren = new HashMap<String, List<ListItem>>();
 
-        Map<String, ArrayList<String>> listData = new HashMap();
+		//Headers
+		listDataHeaders.add("Life Events");
+		listDataHeaders.add("Family");
 
-        //Events
-        List<ListItem> lifeEvents = new ArrayList<ListItem>();
-        ArrayList<Event> lifeEventsList = dataCache.getChronologicalPersonEvents(person.getPersonID());
-        for(int i = 0; i < lifeEventsList.size(); ++i) {
-            Event temp = lifeEventsList.get(i);
-            Person tempPerson = dataCache.getPersonById(temp.getPersonID());
-            ListItem item = new ListItem(temp.getEventID(),
-                    temp.getEventType() + ": " + temp.getCity() + ", " + temp.getCountry()
-                          + " (" + temp.getYear() + ")" + "\n" + tempPerson.getFirstName() + " " + tempPerson.getLastName());
-            lifeEvents.add(item);
-        }
+		Map<String, ArrayList<String>> listData = new HashMap();
 
-        //Family
-        List<ListItem> family = new ArrayList<ListItem>();
-        Person father = dataCache.getPersonById(person.getFatherID());
-        if(father != null) {
-            family.add(new ListItem(father.getPersonID(), father.getFirstName() + " " + father.getLastName() + "\n" + "Father"));
-        }
-        Person mother = dataCache.getPersonById(person.getMotherID());
-        if(mother != null) {
-            family.add(new ListItem(mother.getPersonID(), mother.getFirstName() + " " + mother.getLastName() + "\n" + "Mother"));
-        }
-        Person spouse = dataCache.getPersonById(person.getSpouseID());
-        if(spouse != null) {
-            family.add(new ListItem(spouse.getPersonID(), spouse.getFirstName() + " " + spouse.getLastName() + "\n" + "Spouse"));
-        }
-        ArrayList<Person> children = dataCache.getChildren(person.getPersonID());
-        for(int i = 0; i < children.size(); ++i) {
-            Person child = children.get(i);
-            family.add(new ListItem(child.getPersonID(), child.getFirstName() + " " + child.getLastName() + "\n" + "Child"));
-        }
+		//Events
+		List<ListItem> lifeEvents = new ArrayList<ListItem>();
+		ArrayList<Event> lifeEventsList = dataCache.getChronologicalPersonEvents(person.getPersonID());
+		for (int i = 0; i < lifeEventsList.size(); ++i) {
+			Event temp = lifeEventsList.get(i);
+			Person tempPerson = dataCache.getPersonById(temp.getPersonID());
+			ListItem item = new ListItem(temp.getEventID(),
+					temp.getEventType() + ": " + temp.getCity() + ", " + temp.getCountry()
+							+ " (" + temp.getYear() + ")" + "\n" + tempPerson.getFirstName() + " " + tempPerson.getLastName());
+			lifeEvents.add(item);
+		}
 
-        listDataChildren.put(listDataHeaders.get(0), lifeEvents);
-        listDataChildren.put(listDataHeaders.get(1), family);
-    }
+		//Family
+		List<ListItem> family = new ArrayList<ListItem>();
+		Person father = dataCache.getPersonById(person.getFatherID());
+		if (father != null) {
+			family.add(new ListItem(father.getPersonID(), father.getFirstName() + " " + father.getLastName() + "\n" + "Father"));
+		}
+		Person mother = dataCache.getPersonById(person.getMotherID());
+		if (mother != null) {
+			family.add(new ListItem(mother.getPersonID(), mother.getFirstName() + " " + mother.getLastName() + "\n" + "Mother"));
+		}
+		Person spouse = dataCache.getPersonById(person.getSpouseID());
+		if (spouse != null) {
+			family.add(new ListItem(spouse.getPersonID(), spouse.getFirstName() + " " + spouse.getLastName() + "\n" + "Spouse"));
+		}
+		ArrayList<Person> children = dataCache.getChildren(person.getPersonID());
+		for (int i = 0; i < children.size(); ++i) {
+			Person child = children.get(i);
+			family.add(new ListItem(child.getPersonID(), child.getFirstName() + " " + child.getLastName() + "\n" + "Child"));
+		}
+
+		listDataChildren.put(listDataHeaders.get(0), lifeEvents);
+		listDataChildren.put(listDataHeaders.get(1), family);
+	}
 }

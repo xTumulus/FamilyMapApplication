@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/search_button_item"
+        android:icon="@drawable/ic_search_24px"
         android:title="Search"
-        app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_search_24px"/>
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/settings_button_item"
+        android:icon="@drawable/ic_settings_24px"
         android:title="Settings"
-        app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_settings_24px"/>
+        app:showAsAction="ifRoom" />
 </menu>

@@ -1,27 +1,27 @@
 package com.kitchdevelopment.familymapclient.utils;
 
 public class ListItem {
-    private String id;
-    private String displayText;
+	private String id;
+	private String displayText;
 
-    public String getId() {
-        return id;
-    }
+	public ListItem(String i_id, String i_text) {
+		id = i_id;
+		displayText = i_text;
+	}
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getDisplayText() {
-        return displayText;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void setDisplayText(String displayText) {
-        this.displayText = displayText;
-    }
+	public String getDisplayText() {
+		return displayText;
+	}
 
-    public ListItem (String i_id, String i_text) {
-        id = i_id;
-        displayText = i_text;
-    }
+	public void setDisplayText(String displayText) {
+		this.displayText = displayText;
+	}
 }
