@@ -14,8 +14,6 @@ import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.FontAwesomeModule;
 import com.kitchdevelopment.familymapclient.cache.DataCache;
 
-//Icons
-
 public class MainActivity extends AppCompatActivity {
 
     private FragmentManager fm = this.getSupportFragmentManager();

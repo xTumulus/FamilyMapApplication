@@ -8,36 +8,43 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="-3dp"
         android:layout_weight="1"
         android:orientation="horizontal"
-        android:layout_alignParentTop="true" >
-            <ImageView
-                android:id="@+id/search_bar_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true" />
-            <EditText
-                android:id="@+id/search_bar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hint="@string/searchPrompt" />
-            <ImageView
-                android:id="@+id/search_cancel_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+        android:layout_margin="15dp">
+
+        <ImageView
+            android:id="@+id/search_bar_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true" />
+
+        <EditText
+            android:id="@+id/search_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="@string/searchPrompt"
+            android:layout_marginLeft="40dp" />
+
+        <ImageView
+            android:id="@+id/search_cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"/>
     </RelativeLayout>
 
-    <ExpandableListView
+        <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/searchListView"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="vertical"
         android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"
         android:divider="@android:color/darker_gray"
         android:dividerHeight="0.5dp"
-        android:layout_alignParentBottom="true" >
-    </ExpandableListView>
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="80dp" />
 
 </RelativeLayout>
